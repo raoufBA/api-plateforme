@@ -5,10 +5,33 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\PostRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ *     normalizationContext={"groups"={"Post:collection:read"}},
+ *     collectionOperations={
+ *        "get"={
+ *          "normalization_context"={"groups"={"Post:collection:read"}}
+ *        },
+ *        "post"={
+ *          "denormalization_context"={"groups"={"Post:collection:write"}},
+ *          "validation_groups"={"Post:collection:write"}
+ *       }
+ *     },
+ *     itemOperations={
+ *       "get"={
+ *         "normalization_context"={"groups"={"Post:collection:read","Post:item:read"}}
+ *       },
+ *       "put"={
+ *          "denormalization_context"={"groups"={"Post:item:write"}},
+ *           "validation_groups"={"Post:item:write"}
+ *       },
+ *       "delete"
+ *     }
+ *  )
  */
 class Post
 {
@@ -21,33 +44,47 @@ class Post
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"Post:collection:read", "Post:collection:write", "Post:item:write"})
+     * @Assert\Length(min=5, groups={"Post:collection:write", "Post:item:write"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"Post:collection:read", "Post:collection:write", "Post:item:write"})
      */
     private $slug;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"Post:item:read", "Post:collection:write", "Post:item:write"})
      */
     private $content;
 
     /**
      * @ORM\Column(type="datetime_immutable")
+     * @Groups({"Post:item:read"})
      */
     private $createdAt;
 
     /**
      * @ORM\Column(type="datetime_immutable")
+     * @Groups({"Post:item:read"})
      */
     private $updatedAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="posts")
+     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="posts", cascade={"persist"})
+     * @Groups({"Post:item:read", "Post:collection:read", "Post:collection:write"})
+     * @Assert\Valid()
      */
     private $category;
+
+    public function __construct()
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
