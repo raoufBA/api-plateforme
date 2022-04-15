@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use App\Controller\PostPublishController;
+use App\Controller\PostCountController;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
@@ -22,7 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     },
  *     paginationItemsPerPage=5,
  *     paginationMaximumItemsPerPage=5,
- *     paginationClientItemsPerPage=true,
+ *     paginationClientItemsPerPage=false,
  *     collectionOperations={
  *        "get"={
  *          "normalization_context"={"groups"={"Post:collection:read"}}
@@ -30,7 +31,20 @@ use Symfony\Component\Validator\Constraints as Assert;
  *        "post"={
  *          "denormalization_context"={"groups"={"Post:collection:write"}},
  *          "validation_groups"={"Post:collection:write"}
- *       }
+ *       },
+ *      "count"={
+ *          "method"="Get",
+ *          "path"="/posts/count",
+ *          "paginationEnabled"=false,
+ *          "paginationClientItemsPerPage"=false,
+ *
+ *          "controller"=PostCountController::class,
+ *          "openapi_context"={
+ *              "summary"="Count total posts.",
+ *              "requestBody"={
+ *              }
+ *          }
+ *        }
  *     },
  *     itemOperations={
  *       "get"={
@@ -53,9 +67,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "openapi_context"={
  *              "summary"="Publish a Post resource.",
  *              "requestBody"={
- *                  "content"={
- *                      "application/json"={"schema"={}}
- *                  }
  *              }
  *          }
  *        }
