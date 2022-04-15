@@ -2,7 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiProperty;
+use App\Controller\PostPublishController;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use App\Repository\PostRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -11,10 +16,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=PostRepository::class)
  * @ApiResource(
+ *     normalizationContext={
+ *          "groups"={"Post:collection:read"},
+ *          "openapi_definition_name"="Collection"
+ *     },
  *     paginationItemsPerPage=5,
  *     paginationMaximumItemsPerPage=5,
  *     paginationClientItemsPerPage=true,
- *     normalizationContext={"groups"={"Post:collection:read"}},
  *     collectionOperations={
  *        "get"={
  *          "normalization_context"={"groups"={"Post:collection:read"}}
@@ -26,15 +34,45 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     },
  *     itemOperations={
  *       "get"={
- *         "normalization_context"={"groups"={"Post:collection:read","Post:item:read"}}
+ *         "normalization_context"={
+ *              "groups"={"Post:collection:read","Post:item:read"},
+ *               "openapi_definition_name"="Detail"
+ *          }
  *       },
  *       "put"={
  *          "denormalization_context"={"groups"={"Post:item:write"}},
  *           "validation_groups"={"Post:item:write"}
  *       },
- *       "delete"
+ *       "delete",
+ *        "patch",
+ *        "publish"={
+ *          "method"="Put",
+ *          "path"="/posts/{id}/publish",
+ *          "controller"=PostPublishController::class,
+ *          "denormalization_context"={"groups"={"Post:item:publish"}},
+ *          "openapi_context"={
+ *              "summary"="Publish a Post resource.",
+ *              "requestBody"={
+ *                  "content"={
+ *                      "application/json"={"schema"={}}
+ *                  }
+ *              }
+ *          }
+ *        }
  *     }
  *  )
+ * @ApiFilter(
+ *    SearchFilter::class,
+ *     properties={
+ *       "id"="exact",
+ *       "title"="partial"
+ *     }
+ * )
+ * @ApiFilter(
+ *    OrderFilter::class,
+ *     properties={"createdAt"="DESC","title"="DESC"},
+ *     arguments={"orderParameterName"="order"}
+ * )
  */
 class Post
 {
@@ -82,6 +120,13 @@ class Post
      * @Assert\Valid()
      */
     private $category;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default"=0})
+     * @Groups({"Post:collection:read", "Post:item:publish"})
+     * @ApiProperty(openapiContext={"type"="boolean", "description"="is publish?"})
+     */
+    private $publish = false;
 
     public function __construct()
     {
@@ -162,6 +207,18 @@ class Post
     public function setCategory(?Category $category): self
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getPublish(): ?bool
+    {
+        return $this->publish;
+    }
+
+    public function setPublish(bool $publish): self
+    {
+        $this->publish = $publish;
 
         return $this;
     }
