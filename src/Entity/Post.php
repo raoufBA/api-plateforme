@@ -39,10 +39,35 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "paginationClientItemsPerPage"=false,
  *
  *          "controller"=PostCountController::class,
+ *          "filters"={},
+ *          "pagination_enabled"=false,
  *          "openapi_context"={
  *              "summary"="Count total posts.",
- *              "requestBody"={
- *              }
+ *              "parameters"={
+ *                  {
+ *                     "name"="publish",
+ *                     "description"="Fitler published articles.",
+ *                     "in"="query",
+ *                     "schema"={
+ *                       "type"="integer",
+ *                       "minimum"=0,
+ *                       "maximum"=1
+ *                    }
+ *                 }
+ *             },
+ *              "responses"={
+ *                  "200"={
+ *                      "description"="Number of posts",
+ *                      "content"={
+ *                          "application/json"={
+ *                              "schema"={
+ *                                  "type"="integer",
+ *                                  "example"=3
+ *                              }
+ *                          }
+ *                      }
+ *                  }
+ *             }
  *          }
  *        }
  *     },

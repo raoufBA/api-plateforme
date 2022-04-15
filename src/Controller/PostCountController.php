@@ -4,9 +4,8 @@ namespace App\Controller;
 
 
 use App\Repository\PostRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 
 class PostCountController extends AbstractController
 {
@@ -22,8 +21,11 @@ class PostCountController extends AbstractController
     }
 
 
-    public function __invoke(): int
+    public function __invoke(Request $request): int
     {
-        return $this->repository->count([]);
+        $query = $request->get('publish');
+        $condition = isset($query) ? ['publish' => $query] : [];
+
+        return $this->repository->count($condition);
     }
 }
