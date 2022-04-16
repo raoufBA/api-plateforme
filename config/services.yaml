@@ -26,3 +26,6 @@ services:
         decorates: 'api_platform.openapi.factory'
         # pass the old service as an argument
         arguments: ['@.inner']
+
+    App\DataProvider\DependencyDataProvider:
+        arguments: ['%kernel.project_dir%']
