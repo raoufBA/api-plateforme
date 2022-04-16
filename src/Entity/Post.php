@@ -23,7 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     },
  *     paginationItemsPerPage=5,
  *     paginationMaximumItemsPerPage=5,
- *     paginationClientItemsPerPage=false,
+ *     paginationClientItemsPerPage=true,
  *     collectionOperations={
  *        "get"={
  *          "normalization_context"={"groups"={"Post:collection:read"}}
