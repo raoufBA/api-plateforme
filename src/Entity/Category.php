@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Action\NotFoundAction;
 use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -12,7 +13,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CategoryRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ *     collectionOperations={"Post","Get"},
+ *     itemOperations={
+ *       "put",
+ *       "patch",
+ *       "delete",
+ *       "get"={
+ *           "controller"=NotFoundAction::class,
+ *          "read"=false,
+ *          "outpout"=false,
+ *          "openapi_context"={
+ *              "summary"="hidden",
+ *         }
+ *        }
+ *      }
+ * )
  */
 class Category
 {
