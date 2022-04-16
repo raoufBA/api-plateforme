@@ -4,13 +4,21 @@ namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiProperty;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ApiResource(
  *     paginationEnabled=false,
- *     collectionOperations={"get"},
- *     itemOperations={"get"}
+ *     collectionOperations={"get","post"},
+ *     itemOperations={
+ *         "get",
+ *         "put" ={
+ *              "denormalization_context"={"groups"={"Dependency:item:put"}}
+ *         },
+ *         "delete"
+ * }
  * )
  */
 class Dependency
@@ -33,16 +41,16 @@ class Dependency
      * @var string
      * @Assert\Length(min=3)
      * @ApiProperty(description="Version of dependency", example="5.2.*")
+     * @Groups({"Dependency:item:put"})
      */
     private $version;
 
-    public function __construct(string $uid, string $name, string $version)
+    public function __construct(string $name, string $version)
     {
-        $this->uid = $uid;
+        $this->uid = Uuid::uuid5(Uuid::NAMESPACE_URL, $name);
         $this->name = $name;
         $this->version = $version;
     }
-
 
     /**
      * @return string
@@ -66,5 +74,13 @@ class Dependency
     public function getVersion(): string
     {
         return $this->version;
+    }
+
+    /**
+     * @param string $version
+     */
+    public function setVersion(string $version): void
+    {
+        $this->version = $version;
     }
 }

@@ -27,5 +27,5 @@ services:
         # pass the old service as an argument
         arguments: ['@.inner']
 
-    App\DataProvider\DependencyDataProvider:
+    App\Repository\DependenceRepository:
         arguments: ['%kernel.project_dir%']
