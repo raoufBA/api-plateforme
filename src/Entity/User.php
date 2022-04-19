@@ -32,7 +32,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *          "groups"={"User:collection:read"},
  *          "pagination_enabled"=false,
  *           "openapi_context"={
- *              "security"={"cookieAuth"={}}
+ *              "security"={
+ *                {"cookieAuth"={}}
+ *              }
  *           }
  *       }
  *     }
