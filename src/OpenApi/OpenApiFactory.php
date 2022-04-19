@@ -50,7 +50,14 @@ class OpenApiFactory implements OpenApiFactoryInterface
             ],
 
         ]);
-        $openApi = $openApi->withSecurity(['cookieAuth' => []]);
+        // delete params for api /api/me
+        $meOperations = $openApi->getPaths()->getPath('/api/me')->getGet()->withParameters([]);
+        $mePathItem = $openApi->getPaths()->getPath('/api/me')->withGet($meOperations);
+        $openApi->getPaths()->addPath('/api/me', $mePathItem);
+
+        // To Lock all entries
+        //$openApi = $openApi->withSecurity(['cookieAuth' => []]);
+
         $pathItem = new PathItem(null, null, null, null, null,
             new Operation(
                 'postApiLogin',

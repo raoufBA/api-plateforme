@@ -16,6 +16,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *     security="is_granted('ROLE_USER')",
  *     normalizationContext={"groups"={"User:collection:read"}},
  *     collectionOperations={
+ *      },
+ *     itemOperations={
+ *     "get"={
+ *          "controller"=NotFoundAction::class,
+ *           "openapi_context"={"summary"="hidden"},
+ *           "read"=false,
+ *           "outpout"=false,
+ *     },
  *     "me"={
  *          "path"="/me",
  *          "method"="Get",
@@ -25,16 +33,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
  *          "pagination_enabled"=false,
  *           "openapi_context"={
  *              "security"={"cookieAuth"={}}
- *         }
- *     }
- *      },
- *     itemOperations={
- *     "get"={
- *          "controller"=NotFoundAction::class,
- *           "openapi_context"={"summary"="hidden"},
- *           "read"=false,
- *           "outpout"=false,
- *     }
+ *           }
+ *       }
  *     }
  * )
  */
